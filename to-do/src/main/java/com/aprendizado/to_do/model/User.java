@@ -9,11 +9,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -22,17 +24,17 @@ public class User {
 
     @NotBlank
     @Size(min = 3)
-    private String Name;
+    private String name;
 
     @Email
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tarefas;
 
     public User(@NotBlank @Size(min = 3) String name, @Email String email) {
-        Name = name;
+        this.name = name;
         this.email = email;
     }
 
@@ -48,11 +50,11 @@ public class User {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getEmail() {
