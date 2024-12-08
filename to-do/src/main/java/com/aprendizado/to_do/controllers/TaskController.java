@@ -1,55 +1,50 @@
 package com.aprendizado.to_do.controllers;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aprendizado.to_do.model.Task;
-import com.aprendizado.to_do.repository.TaskRepository;
+import com.aprendizado.to_do.DTO.CreateTaskDTO;
+import com.aprendizado.to_do.DTO.TaskOutputDTO;
 
-import jakarta.validation.Valid;
+import com.aprendizado.to_do.service.TaskService;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-
 @RestController
-@RequestMapping("/tasks")
 public class TaskController {
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskService taskService;
 
-    @GetMapping
-    public List<Task> getTasks(@RequestParam (required = false) String title) {
-        if (title!= null){
-            return taskRepository.findByTitle(title);
-        }
-        return taskRepository.findAll();
+    public TaskController( TaskService taskService) {
+
+        this.taskService = taskService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Task> getById (@PathVariable Long id){
-        Optional<Task> optional = taskRepository.findById(id);
-        if(!optional.isPresent()){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(optional.get());
+    @PostMapping("/tasks")
+    public ResponseEntity<Void> createTask(@RequestBody CreateTaskDTO taskDTO, JwtAuthenticationToken token) {
+        taskService.createTask(taskDTO, token);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody @Valid Task task){
-        taskRepository.save(task);
-        return ResponseEntity.status(201).body(task);
+    @DeleteMapping("/tasks/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable("id") Long taskID, JwtAuthenticationToken token) {
+        taskService.deleteTask(taskID, token);
+        return ResponseEntity.ok().build();
+    }
 
+    @GetMapping("/tasks/{userId}")
+    public ResponseEntity<List<TaskOutputDTO>> tasks (@PathVariable("userID") UUID userId) {
+        var tasks = taskService.getTasksByUserId(userId);
+        return ResponseEntity.ok(tasks);
     }
     
 }

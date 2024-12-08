@@ -16,9 +16,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -27,6 +29,7 @@ public class Task {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "task_id")
     private Long id;
 
     @NotBlank
@@ -37,8 +40,10 @@ public class Task {
 
     private boolean completed = false;
 
-    @NotEmpty
+    @Positive
     @NotNull
+    @Min(1)
+    @Max(5)
     private Integer priority;
 
     @CreatedDate
@@ -95,7 +100,7 @@ public class Task {
         this.completed = completed;
     }
     
-    public Number getPriority() {
+    public Integer getPriority() {
         return priority;
     }
     

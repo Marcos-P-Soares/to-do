@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar chaves privadas
+private.key
+public.key
+
+# Ignorar o application.properties
+application.properties
